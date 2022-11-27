@@ -1,5 +1,5 @@
 from dataclasses import dataclass, asdict
-from typing import TypedDict, Dict, Union, ClassVar
+from typing import Dict, ClassVar
 
 MESSAGE = ('Тип тренировки: {}; '
            'Длительность: {:.3f} ч.; '
@@ -93,8 +93,8 @@ class SportsWalking(Training):
         c_wght = self.CALORIES_WEIGHT_MULTIPLIER
         c_sp = self.CALORIES_SPEED_HEIGHT_MULTIPLIER
         spent_calories = (c_wght * self.weight + (
-                (speed ** 2 / height) * c_sp
-                * self.weight)) * duration
+            (speed ** 2 / height) * c_sp
+            * self.weight)) * duration
         return spent_calories
 
 
@@ -112,16 +112,16 @@ class Swimming(Training):
         self.length_pool = length_pool
 
     def get_mean_speed(self) -> float:
-        mean_speed = self.length_pool * self.count_pool \
-                     / self.M_IN_KM / self.duration
+        mean_speed = (self.length_pool * self.count_pool
+                      / self.M_IN_KM / self.duration)
         """Получить среднюю скорость движения."""
         return mean_speed
 
     def get_spent_calories(self) -> float:
         temp = self.get_mean_speed() + self.CALORIES_MEAN_SPEED_SHIFT
         # (средняя_скорость + 1.1) * 2 * вес * время_тренировки
-        spent_calories = temp * self.CALORIES_WEIGHT_MULTIPLIER \
-                         * self.weight * self.duration
+        spent_calories = (temp * self.CALORIES_WEIGHT_MULTIPLIER
+                          * self.weight * self.duration)
         return spent_calories
 
 
