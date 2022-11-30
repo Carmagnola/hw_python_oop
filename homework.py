@@ -1,11 +1,5 @@
 from dataclasses import dataclass, asdict
-from typing import Dict, ClassVar
-
-MESSAGE = ('Тип тренировки: {}; '
-           'Длительность: {:.3f} ч.; '
-           'Дистанция: {:.3f} км; '
-           'Ср. скорость: {:.3f} км/ч; '
-           'Потрачено ккал: {:.3f}.')
+from typing import Dict, Type
 
 
 @dataclass
@@ -17,8 +11,14 @@ class InfoMessage:
     speed: float
     calories: float
 
+    MESSAGE = ('Тип тренировки: {}; '
+               'Длительность: {:.3f} ч.; '
+               'Дистанция: {:.3f} км; '
+               'Ср. скорость: {:.3f} км/ч; '
+               'Потрачено ккал: {:.3f}.')
+
     def get_message(self) -> str:
-        return MESSAGE.format(*asdict(self).values())
+        return self.MESSAGE.format(*asdict(self).values())
 
 
 class Training:
@@ -49,7 +49,6 @@ class Training:
     def get_spent_calories(self):
         """Получить количество затраченных калорий."""
         raise NotImplementedError("Please Implement this method")
-        pass
 
     def show_training_info(self) -> InfoMessage:
         """Вернуть информационное сообщение о выполненной тренировке."""
@@ -92,9 +91,9 @@ class SportsWalking(Training):
         speed = self.get_mean_speed() * self.KMH_IN_MSEC  # метры в сек
         c_wght = self.CALORIES_WEIGHT_MULTIPLIER
         c_sp = self.CALORIES_SPEED_HEIGHT_MULTIPLIER
-        spent_calories = (c_wght * self.weight + (
-            (speed ** 2 / height) * c_sp
-            * self.weight)) * duration
+        temp1 = speed ** 2 / height
+        temp2 = temp1 * c_sp * self.weight
+        spent_calories = (c_wght * self.weight + temp2) * duration
         return spent_calories
 
 
@@ -128,8 +127,8 @@ class Swimming(Training):
 def read_package(workout_type: str, data: list) -> Training:
     """Прочитать данные полученные от датчиков."""
 
-    types: Dict[str, ClassVar] = {'SWM': Swimming, 'RUN': Running,
-                                  'WLK': SportsWalking}
+    types: Dict[str, Type[Training]] = {'SWM': Swimming, 'RUN': Running,
+                                        'WLK': SportsWalking}
     return types[workout_type](*data)
 
 
